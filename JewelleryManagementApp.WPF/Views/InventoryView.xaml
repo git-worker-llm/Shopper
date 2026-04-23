@@ -1,0 +1,47 @@
+<UserControl x:Class="JewelleryManagementApp.WPF.Views.InventoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Header="Manage Inventory" Margin="0,0,20,0" Padding="10">
+            <StackPanel>
+                <TextBlock Text="Search:"/>
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock Text="Name:"/>
+                <TextBox Text="{Binding Name}" />
+                <TextBlock Text="Category:"/>
+                <TextBox Text="{Binding Category}" />
+                <TextBlock Text="Weight:"/>
+                <TextBox Text="{Binding Weight}" />
+                <TextBlock Text="Price:"/>
+                <TextBox Text="{Binding Price}" />
+                <TextBlock Text="Stock:"/>
+                <TextBox Text="{Binding Stock}" />
+                <Button Content="Add Item" Command="{Binding AddCommand}" />
+                <Button Content="Refresh" Command="{Binding RefreshCommand}" />
+            </StackPanel>
+        </GroupBox>
+
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="True" Margin="0,10,0,0">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Action">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Delete" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
