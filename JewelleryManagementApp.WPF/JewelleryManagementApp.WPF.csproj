@@ -25,4 +25,8 @@
     </None>
   </ItemGroup>
 
+  <Target Name="UnblockBinary" AfterTargets="Build">
+    <Exec Command="powershell -Command &quot;Get-ChildItem '$(TargetDir)*.dll', '$(TargetDir)*.exe' | Unblock-File&quot;" />
+  </Target>
+
 </Project>

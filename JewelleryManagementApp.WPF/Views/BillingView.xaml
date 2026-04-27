@@ -16,10 +16,10 @@
             <GroupBox Header="Billing Information" Padding="10">
                 <StackPanel>
                     <TextBlock Text="Select Customer:"/>
-                    <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}" DisplayMemberPath="Name" />
+                    <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="Name" />
 
                     <TextBlock Text="Select Item:"/>
-                    <ComboBox ItemsSource="{Binding AvailableItems}" SelectedItem="{Binding SelectedItem}" DisplayMemberPath="Name" />
+                    <ComboBox ItemsSource="{Binding AvailableItems}" SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="Name" />
                     <TextBlock Text="Quantity:"/>
                     <TextBox Text="{Binding Quantity}" />
 

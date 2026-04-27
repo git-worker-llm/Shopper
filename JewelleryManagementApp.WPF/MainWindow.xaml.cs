@@ -13,6 +13,9 @@ namespace JewelleryManagementApp.WPF
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // Only react if the event originated from the TabControl itself
+            if (e.Source != sender) return;
+
             if (BillingTab.IsSelected && BillingTab.Content is UserControl billingView)
             {
                 if (billingView.DataContext is BillingViewModel viewModel)
