@@ -1,11 +1,15 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.ComponentModel;
+using System.Windows.Data;
+using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
 using JewelleryManagementApp.WPF.Data;
 using JewelleryManagementApp.WPF.Models;
-using System.ComponentModel;
-using System.Windows.Data;
+using JewelleryManagementApp.WPF.Commands;
+using JewelleryManagementApp.WPF.Services;
+using System.Threading.Tasks;
 
 namespace JewelleryManagementApp.WPF.ViewModels
 {
@@ -26,12 +30,25 @@ namespace JewelleryManagementApp.WPF.ViewModels
             }
         }
 
-        public HistoryViewModel()
+        public new ICommand RefreshCommand { get; }
+        public ICommand PrintCommand { get; }
+
+        public HistoryViewModel(IInvoiceService invoiceService)
         {
+            _invoiceService = invoiceService;
             Bills = new ObservableCollection<Bill>();
             BillsView = CollectionViewSource.GetDefaultView(Bills);
             BillsView.Filter = FilterBills;
+            RefreshCommand = new RelayCommand(_ => Refresh());
+            PrintCommand = new RelayCommand(async bill => await PrintBill((Bill)bill!));
             Refresh();
+        }
+
+        private readonly IInvoiceService _invoiceService;
+
+        private async Task PrintBill(Bill bill)
+        {
+            await _invoiceService.PrintInvoiceAsync(bill);
         }
 
         private bool FilterBills(object bill)

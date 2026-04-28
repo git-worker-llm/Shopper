@@ -15,7 +15,14 @@
                     <DataGridTextColumn Header="Customer" Binding="{Binding Customer.Name}" />
                     <DataGridTextColumn Header="Total Amount" Binding="{Binding TotalAmount}" />
                     <DataGridTextColumn Header="GST" Binding="{Binding GSTAmount}" />
-                </DataGrid.Columns>
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Print" Command="{Binding DataContext.PrintCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
     </Grid>

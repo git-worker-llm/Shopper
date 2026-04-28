@@ -33,6 +33,7 @@ namespace JewelleryManagementApp.WPF
             services.AddSingleton<CustomerViewModel>();
             services.AddSingleton<HistoryViewModel>();
             services.AddSingleton<GSTReportViewModel>();
+            services.AddSingleton<PrintTemplateViewModel>();
             services.AddSingleton<DashboardViewModel>();
             services.AddSingleton<SettingsViewModel>();
         }

@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Media;
+using System.Windows.Markup;
+using System.IO;
+using System.Xml;
 using JewelleryManagementApp.WPF.Data;
 using JewelleryManagementApp.WPF.Models;
 
@@ -23,16 +25,25 @@ namespace JewelleryManagementApp.WPF.Services
         {
             try
             {
+                var template = _dbContext.InvoiceTemplates.FirstOrDefault();
                 var settings = _dbContext.Settings.FirstOrDefault() ?? new Settings();
 
-                var doc = new FlowDocument();
-                doc.PagePadding = new Thickness(50);
+                string xaml = template?.TemplateXaml ?? "<FlowDocument xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><Paragraph FontSize=\"24\" FontWeight=\"Bold\">{{ShopName}}</Paragraph></FlowDocument>";
 
-                doc.Blocks.Add(new Paragraph(new Run(settings.ShopName)) { FontSize = 24, FontWeight = FontWeights.Bold });
-                doc.Blocks.Add(new Paragraph(new Run($"GST: {settings.GSTNumber}")));
-                doc.Blocks.Add(new Paragraph(new Run($"Address: {settings.Address}")));
-                doc.Blocks.Add(new Paragraph(new Run($"Date: {bill.Date}")));
-                doc.Blocks.Add(new Paragraph(new Run("--------------------------------------------------")));
+                xaml = xaml.Replace("{{ShopName}}", template?.ShopName ?? settings.ShopName);
+                xaml = xaml.Replace("{{GSTNumber}}", template?.GSTNumber ?? settings.GSTNumber);
+                xaml = xaml.Replace("{{Address}}", template?.Address ?? settings.Address);
+                xaml = xaml.Replace("{{Date}}", bill.Date.ToString());
+
+                FlowDocument doc;
+                using (var stringReader = new StringReader(xaml))
+                {
+                    using (var xmlReader = XmlReader.Create(stringReader))
+                    {
+                        doc = (FlowDocument)XamlReader.Load(xmlReader);
+                    }
+                }
+                doc.PagePadding = new Thickness(50);
 
                 var table = new Table();
                 table.Columns.Add(new TableColumn());

@@ -12,6 +12,7 @@ namespace JewelleryManagementApp.WPF.Data
         public DbSet<Bill> Bills { get; set; }
         public DbSet<BillItem> BillItems { get; set; }
         public DbSet<Settings> Settings { get; set; }
+        public DbSet<InvoiceTemplate> InvoiceTemplates { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

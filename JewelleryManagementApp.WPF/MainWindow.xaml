@@ -23,6 +23,9 @@
         <TabItem Header="GST Report">
             <views:GSTReportView />
         </TabItem>
+        <TabItem Header="Print Setup">
+            <views:PrintTemplateView />
+        </TabItem>
         <TabItem Header="Dashboard">
             <views:DashboardView />
         </TabItem>
