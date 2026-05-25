@@ -62,7 +62,13 @@ namespace JewelleryManagementApp.WPF.ViewModels
             Bills.Clear();
             using (var context = new JewelleryDbContext())
             {
-                foreach (var bill in context.Bills.Include(b => b.Customer).ToList())
+                var fullBills = context.Bills
+                    .Include(b => b.Customer)
+                    .Include(b => b.BillItems)
+                        .ThenInclude(bi => bi.Item)
+                    .ToList();
+
+                foreach (var bill in fullBills)
                 {
                     Bills.Add(bill);
                 }

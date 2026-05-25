@@ -3,11 +3,192 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" d:DesignHeight="200" d:DesignWidth="300">
-    <StackPanel Margin="20">
-        <Button Content="Refresh" Command="{Binding RefreshCommand}" />
-        <TextBlock Text="Dashboard" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
-        <TextBlock Text="{Binding TotalSales, StringFormat='Total Sales: {0:C}'}" />
-        <TextBlock Text="{Binding TotalItemsInStock, StringFormat='Total Items in Stock: {0}'}" />
-    </StackPanel>
+             xmlns:helpers="clr-namespace:JewelleryManagementApp.WPF.Helpers"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000"
+             Background="{DynamicResource DarkBgBrush}">
+
+    <UserControl.Resources>
+        <helpers:MathAddConverter x:Key="MathAddConverter" />
+    </UserControl.Resources>
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Header -->
+        <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderGoldBrush}" Padding="0,0,0,15" Margin="0,0,0,20">
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="MANAGEMENT INSIGHTS &amp; AUDITS" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}"/>
+                    <TextBlock Text="Executive Performance Analytics Dashboard" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextLightBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <Button Content="REFRESH ANALYTICS" 
+                        Command="{Binding RefreshCommand}" 
+                        Background="{DynamicResource CardInnerBgBrush}" 
+                        Foreground="{DynamicResource TextLightBrush}" 
+                        FontWeight="Bold" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Right" 
+                        Height="36" 
+                        Padding="15,6" 
+                        Margin="0"
+                        ToolTip="Reload fresh transactional metrics and stock alerts."/>
+            </Grid>
+        </Border>
+
+        <!-- KPI Executive Metrics Grid -->
+        <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,20">
+            
+            <!-- Metric 1: Gross Sales -->
+            <Border Background="{DynamicResource CardBgBrush}" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+                <StackPanel>
+                    <TextBlock Text="TOTAL SALES REVENUE" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" Margin="0"/>
+                    <TextBlock Text="{Binding TotalSales, StringFormat='₹{0:N2}'}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}" Margin="0,8,0,2"/>
+                    <TextBlock Text="Reconciled Gross Turnovers" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Metric 2: Taxable Amount -->
+            <Border Background="{DynamicResource CardBgBrush}" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+                <StackPanel>
+                    <TextBlock Text="ACCUMULATED GST TAX" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" Margin="0"/>
+                    <TextBlock Text="{Binding TotalGST, StringFormat='₹{0:N2}'}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" Margin="0,8,0,2"/>
+                    <TextBlock Text="Reconciled tax obligations" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Metric 3: Client Base -->
+            <Border Background="{DynamicResource CardBgBrush}" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}" CornerRadius="8" Padding="18" Margin="0,0,12,0">
+                <StackPanel>
+                    <TextBlock Text="REGISTERED CLIENTS" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" Margin="0"/>
+                    <TextBlock Text="{Binding TotalCustomers}" FontSize="24" FontWeight="Bold" Foreground="#3498DB" Margin="0,8,0,2"/>
+                    <TextBlock Text="Active Jewellery patrons" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Metric 4: Total Pieces in Stock -->
+            <Border Background="{DynamicResource CardBgBrush}" BorderThickness="1" BorderBrush="{DynamicResource BorderGoldBrush}" CornerRadius="8" Padding="18" Margin="0">
+                <StackPanel>
+                    <TextBlock Text="PIECES IN PHYSICAL STOCK" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" Margin="0"/>
+                    <TextBlock Text="{Binding TotalItemsInStock}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource GoldLightBrush}" Margin="0,8,0,2"/>
+                    <TextBlock Text="Active showroom catalog pieces" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0"/>
+                </StackPanel>
+            </Border>
+            
+        </UniformGrid>
+
+        <!-- Lower Section: Chart + Split tables -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="380"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: Sales Breakdown Category Visualizer & Warnings -->
+            <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                <Border Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Sales by Category Share" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" Margin="0,0,0,15"/>
+
+                        <!-- Gold category bar -->
+                        <TextBlock Text="{Binding GoldSalesPercentage, StringFormat='Gold Jewellery ({0}%)'}" FontSize="12" Foreground="{DynamicResource TextLightBrush}" Margin="0,5,0,4"/>
+                        <Grid Height="8" Margin="0,0,0,15">
+                            <Border Background="{DynamicResource CardInnerBgBrush}" CornerRadius="4"/>
+                            <ProgressBar Value="{Binding GoldSalesPercentage}" Minimum="0" Maximum="100" Background="Transparent" Foreground="{DynamicResource GoldPrimaryBrush}" BorderThickness="0">
+                                <ProgressBar.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="4"/>
+                                    </Style>
+                                </ProgressBar.Resources>
+                            </ProgressBar>
+                        </Grid>
+
+                        <!-- Silver category bar -->
+                        <TextBlock Text="{Binding SilverSalesPercentage, StringFormat='Silver Anklets &amp; Articles ({0}%)'}" FontSize="12" Foreground="{DynamicResource TextLightBrush}" Margin="0,0,0,4"/>
+                        <Grid Height="8" Margin="0,0,0,15">
+                            <Border Background="{DynamicResource CardInnerBgBrush}" CornerRadius="4"/>
+                            <ProgressBar Value="{Binding SilverSalesPercentage}" Minimum="0" Maximum="100" Background="Transparent" Foreground="#C0C0C0" BorderThickness="0">
+                                <ProgressBar.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="4"/>
+                                    </Style>
+                                </ProgressBar.Resources>
+                            </ProgressBar>
+                        </Grid>
+
+                        <!-- Platinum category bar -->
+                        <TextBlock Text="{Binding PlatinumSalesPercentage, StringFormat='Platinum bands &amp; Solitaires ({0}%)'}" FontSize="12" Foreground="{DynamicResource TextLightBrush}" Margin="0,0,0,4"/>
+                        <Grid Height="8" Margin="0">
+                            <Border Background="{DynamicResource CardInnerBgBrush}" CornerRadius="4"/>
+                            <ProgressBar Value="{Binding PlatinumSalesPercentage}" Minimum="0" Maximum="100" Background="Transparent" Foreground="#E5E4E2" BorderThickness="0">
+                                <ProgressBar.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="4"/>
+                                    </Style>
+                                </ProgressBar.Resources>
+                            </ProgressBar>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Stock Replenish / Low Stock Alerts -->
+                <Border Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Showroom Replenishment Alerts" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource DangerBrush}" Margin="0,0,0,10"/>
+                        
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding LowStockItems}" AutoGenerateColumns="False" Height="140" HeadersVisibility="None" BorderThickness="0" Background="Transparent" AlternatingRowBackground="Transparent" RowBackground="Transparent">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Item" Binding="{Binding Name}" Width="*" />
+                                <DataGridTemplateColumn Width="95">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{DynamicResource CardInnerBgBrush}" BorderBrush="{DynamicResource DangerBrush}" BorderThickness="1" CornerRadius="3" Padding="6,2" HorizontalAlignment="Right">
+                                                <TextBlock Text="{Binding Stock, StringFormat='{}{0} units left'}" Foreground="{DynamicResource DangerBrush}" FontSize="11" FontWeight="Bold" Margin="0"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <!-- Right: Live Recent Transactions Log -->
+            <Border Grid.Column="1" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Live Showroom Transactions Log" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" Margin="0,0,0,15"/>
+
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding RecentSales}" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Filing Date" Binding="{Binding Date, StringFormat='dd/MM/yyyy hh:mm tt'}" Width="160" />
+                            <DataGridTextColumn Header="Patron Name" Binding="{Binding Customer.Name}" Width="*" />
+                            <DataGridTextColumn Header="Subtotal" Binding="{Binding TotalAmount, StringFormat='₹{0:N2}'}" Width="130" />
+                            <DataGridTextColumn Header="GST" Binding="{Binding GSTAmount, StringFormat='₹{0:N2}'}" Width="110" />
+                            <DataGridTemplateColumn Header="Net Invoiced" Width="140">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource MathAddConverter}}" FontWeight="Bold" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
 </UserControl>

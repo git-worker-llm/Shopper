@@ -11,5 +11,13 @@ namespace JewelleryManagementApp.WPF.Views
             InitializeComponent();
             DataContext = App.ServiceProvider.GetRequiredService<SettingsViewModel>();
         }
+
+        private void ThemeMode_Changed(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (ThemeModeCheckbox != null)
+            {
+                App.ApplyTheme(ThemeModeCheckbox.IsChecked == true);
+            }
+        }
     }
 }

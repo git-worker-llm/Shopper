@@ -11,23 +11,6 @@ namespace JewelleryManagementApp.WPF
         public MainWindow()
         {
             InitializeComponent();
-            // Assuming we set DataContext for views that need it
-            // This is a quick fix, ideally use a factory or better DI integration
-            if (BillingTab.Content is UserControl billing) billing.DataContext = App.ServiceProvider.GetRequiredService<BillingViewModel>();
-
-            // Find the Print Setup tab and set its DataContext
-            var tabControl = (TabControl)Content;
-            foreach (TabItem item in tabControl.Items)
-            {
-                if (item.Header.ToString() == "Print Setup" && item.Content is UserControl printView)
-                {
-                    printView.DataContext = App.ServiceProvider.GetRequiredService<PrintTemplateViewModel>();
-                }
-                if (item.Header.ToString() == "History" && item.Content is UserControl historyView)
-                {
-                    historyView.DataContext = App.ServiceProvider.GetRequiredService<HistoryViewModel>();
-                }
-            }
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)

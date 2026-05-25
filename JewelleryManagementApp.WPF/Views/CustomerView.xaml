@@ -3,35 +3,82 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000"
+             Background="{DynamicResource DarkBgBrush}">
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="340" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <GroupBox Header="Customer Details" Margin="0,0,20,0" Padding="10">
+        <!-- Left: Patron Form -->
+        <Border Grid.Column="0" Margin="0,0,20,0" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
             <StackPanel>
-                <TextBlock Text="Name:"/>
-                <TextBox Text="{Binding Name}" />
-                <TextBlock Text="Phone:"/>
-                <TextBox Text="{Binding Phone}" />
-                <Button Content="Add Customer" Command="{Binding AddCustomerCommand}" />
-            </StackPanel>
-        </GroupBox>
+                <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderGoldBrush}" Padding="0,0,0,10" Margin="0,0,0,15">
+                    <TextBlock Text="Patron Registry" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}"/>
+                </Border>
 
-        <DataGrid Grid.Column="1" ItemsSource="{Binding Customers}" AutoGenerateColumns="False" Margin="0,10,0,0">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="*" />
-                <DataGridTemplateColumn Header="Action">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Delete" Command="{Binding DataContext.DeleteCustomerCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" />
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+                <!-- Name -->
+                <TextBlock Text="Full Name:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,15"/>
+
+                <!-- Phone -->
+                <TextBlock Text="Phone Contact:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,25"/>
+
+                <Button Content="REGISTER NEW PATRON" 
+                        Command="{Binding AddCustomerCommand}" 
+                        Height="42" 
+                        Background="{DynamicResource GoldPrimaryBrush}" 
+                        Foreground="#121212" 
+                        FontWeight="Bold" 
+                        FontSize="12" 
+                        Margin="0,0,0,10"
+                        ToolTip="Register client profile to showroom patrons database."/>
+                <Button Content="REFRESH LIST" 
+                        Command="{Binding RefreshCommand}" 
+                        Height="36" 
+                        Background="{DynamicResource CardInnerBgBrush}" 
+                        Foreground="{DynamicResource TextLightBrush}" 
+                        FontWeight="Bold" 
+                        FontSize="11" 
+                        Margin="0"
+                        ToolTip="Reload fresh patron records from showroom database."/>
+            </StackPanel>
+        </Border>
+
+        <!-- Right: Registered Patrons Table -->
+        <Border Grid.Column="1" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Showroom Patrons Database" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" Margin="0,0,0,15"/>
+
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Customers}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Patron ID" Binding="{Binding Id, StringFormat='PTR-{0:D4}'}" Width="110" />
+                        <DataGridTextColumn Header="Patron Name" Binding="{Binding Name}" Width="*" />
+                        <DataGridTextColumn Header="Phone Contact" Binding="{Binding Phone}" Width="*" />
+                        <DataGridTemplateColumn Header="Actions" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Delete Record" 
+                                            Command="{Binding DataContext.DeleteCustomerCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                            CommandParameter="{Binding}" 
+                                            Style="{StaticResource CentredActionButton}"
+                                            Background="{DynamicResource DangerBrush}" 
+                                            Foreground="White"
+                                            ToolTip="Permanently delete this patron record from showroom database."/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

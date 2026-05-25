@@ -3,45 +3,113 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000"
+             Background="{DynamicResource DarkBgBrush}">
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="340" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <GroupBox Header="Manage Inventory" Margin="0,0,20,0" Padding="10">
-            <StackPanel>
-                <TextBlock Text="Search:"/>
-                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock Text="Name:"/>
-                <TextBox Text="{Binding Name}" />
-                <TextBlock Text="Category:"/>
-                <TextBox Text="{Binding Category}" />
-                <TextBlock Text="Weight:"/>
-                <TextBox Text="{Binding Weight}" />
-                <TextBlock Text="Price:"/>
-                <TextBox Text="{Binding Price}" />
-                <TextBlock Text="Stock:"/>
-                <TextBox Text="{Binding Stock}" />
-                <Button Content="Add Item" Command="{Binding AddCommand}" />
-                <Button Content="Refresh" Command="{Binding RefreshCommand}" />
-            </StackPanel>
-        </GroupBox>
+        <!-- Left: Stock Entry Form -->
+        <Border Grid.Column="0" Margin="0,0,20,0" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderGoldBrush}" Padding="0,0,0,10" Margin="0,0,0,15">
+                        <TextBlock Text="Showroom Item Catalog" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}"/>
+                    </Border>
 
-        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
-            <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="True" Margin="0,10,0,0">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Action">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Delete" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </ScrollViewer>
+                    <!-- Name -->
+                    <TextBlock Text="Item / Piece Name:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,12"/>
+
+                    <!-- Category -->
+                    <TextBlock Text="Jewellery Category (Gold/Silver/etc):" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,12"/>
+
+                    <!-- Weight -->
+                    <TextBlock Text="Gross Weight (Grams):" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Weight, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,12"/>
+
+                    <!-- Price -->
+                    <TextBlock Text="Retail Price (₹):" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Price, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,12"/>
+
+                    <!-- Stock -->
+                    <TextBlock Text="Available Pieces (Stock):" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Stock, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,20"/>
+
+                    <Button Content="ADD PIECE TO CATALOG" 
+                            Command="{Binding AddCommand}" 
+                            Height="40" 
+                            Background="{DynamicResource GoldPrimaryBrush}" 
+                            Foreground="#121212" 
+                            FontWeight="Bold" 
+                            FontSize="12" 
+                            Margin="0,0,0,10"
+                            ToolTip="Register new gold/silver piece to showroom inventory catalog."/>
+                    <Button Content="REFRESH CATALOG" 
+                            Command="{Binding RefreshCommand}" 
+                            Height="36" 
+                            Background="{DynamicResource CardInnerBgBrush}" 
+                            Foreground="{DynamicResource TextLightBrush}" 
+                            FontWeight="Bold" 
+                            FontSize="11" 
+                            Margin="0"
+                            ToolTip="Reload fresh stock inventory records from database."/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Right: Active Catalog Table -->
+        <Border Grid.Column="1" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Showroom Pieces Database" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" Margin="0,0,0,15"/>
+
+                <!-- Search Panel -->
+                <Border Grid.Row="1" Background="{DynamicResource CardInnerBgBrush}" Padding="15" CornerRadius="6" Margin="0,0,0,15" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Search Showroom pieces: " FontSize="12" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>
+                        <TextBox Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Height="34" Padding="10,4" Margin="0" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- DataGrid -->
+                <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Item ID" Binding="{Binding Id, StringFormat='PC-{0:D4}'}" Width="90" />
+                        <DataGridTextColumn Header="Jewellery Name" Binding="{Binding Name}" Width="*" />
+                        <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="100" />
+                        <DataGridTextColumn Header="Weight" Binding="{Binding Weight, StringFormat='{}{0} g'}" Width="100" />
+                        <DataGridTextColumn Header="Price (₹)" Binding="{Binding Price, StringFormat='₹{0:N2}'}" Width="150" />
+                        <DataGridTextColumn Header="In Stock" Binding="{Binding Stock}" Width="90" />
+                        <DataGridTemplateColumn Header="Actions" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Remove" 
+                                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                            CommandParameter="{Binding}" 
+                                            Style="{StaticResource CentredActionButton}"
+                                            Background="{DynamicResource DangerBrush}" 
+                                            Foreground="White"
+                                            ToolTip="Permanently delete this inventory piece from the showroom catalog."/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

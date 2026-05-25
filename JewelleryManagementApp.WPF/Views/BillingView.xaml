@@ -3,46 +3,211 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helpers="clr-namespace:JewelleryManagementApp.WPF.Helpers"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="1000"
+             Background="{DynamicResource DarkBgBrush}">
+    
+    <UserControl.Resources>
+        <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <Style x:Key="RightAlignedDataGridText" TargetType="TextBlock">
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="380" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!-- Form Section -->
-        <StackPanel Grid.Column="0" Margin="0,0,20,0">
-            <GroupBox Header="Billing Information" Padding="10">
-                <StackPanel>
-                    <TextBlock Text="Select Customer:"/>
-                    <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="Name" />
+        <Border Grid.Column="0" Margin="0,0,20,0" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+            <StackPanel>
+                <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderGoldBrush}" Padding="0,0,0,10" Margin="0,0,0,15">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="M 10,25 L 20,10 L 35,22 L 50,10 Z" Fill="{DynamicResource GoldPrimaryBrush}" Width="20" Height="14" Stretch="Fill" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Quick Sale Dispatch" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
 
-                    <TextBlock Text="Select Item:"/>
-                    <ComboBox ItemsSource="{Binding AvailableItems}" SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}" DisplayMemberPath="Name" />
-                    <TextBlock Text="Quantity:"/>
-                    <TextBox Text="{Binding Quantity}" />
+                <!-- Select Customer -->
+                <TextBlock Text="Select Customer:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" 
+                              ItemsSource="{Binding Customers}" 
+                              SelectedItem="{Binding SelectedCustomer, UpdateSourceTrigger=PropertyChanged}" 
+                              DisplayMemberPath="Name" 
+                              Height="38" 
+                              Margin="0"/>
+                    <Button Grid.Column="1" 
+                            Content="+" 
+                            Command="{Binding OpenQuickAddCommand}" 
+                            Width="38" 
+                            Height="38" 
+                            Margin="8,0,0,0" 
+                            Background="{DynamicResource GoldPrimaryBrush}" 
+                            Foreground="#121212" 
+                            FontWeight="Bold" 
+                            FontSize="18" 
+                            Padding="0" 
+                            VerticalAlignment="Center" 
+                            HorizontalAlignment="Center"
+                            ToolTip="Quick Register a new customer patron right on this screen."/>
+                </Grid>
 
-                    <Button Content="Add to Bill" Command="{Binding AddCommand}" />
-                    <Button Content="Save Bill" Command="{Binding SaveBillCommand}" Background="Green" />
-                </StackPanel>
-            </GroupBox>
-        </StackPanel>
+                <!-- Select Item -->
+                <TextBlock Text="Select Jewellery Item:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                <ComboBox x:Name="ItemSelector" 
+                          ItemsSource="{Binding AvailableItems}" 
+                          SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}" 
+                          DisplayMemberPath="Name" 
+                          Height="38" 
+                          Margin="0,0,0,15"/>
+
+                <!-- Display Stock Info of Selected Item -->
+                <Border Visibility="{Binding SelectedItem, Converter={StaticResource NullToVisibilityConverter}}" Background="{DynamicResource BorderGoldBrush}" Padding="12,8" CornerRadius="4" Margin="0,0,0,15">
+                    <Grid>
+                        <TextBlock Text="{Binding SelectedItem.Stock, StringFormat='Available Stock: {0} units'}" FontSize="12" Foreground="{DynamicResource GoldLightBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding SelectedItem.Price, StringFormat='Rate: ₹{0:N2}'}" FontSize="12" Foreground="{DynamicResource TextLightBrush}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Quantity -->
+                <TextBlock Text="Quantity to Purchase:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" 
+                         Height="38" 
+                         Padding="10,6" 
+                         Margin="0,0,0,25"/>
+
+                <!-- Add to Bill Command -->
+                <Button Content="ADD TO CURRENT BILL" 
+                        Command="{Binding AddCommand}" 
+                        Height="42" 
+                        Background="{DynamicResource GoldPrimaryBrush}" 
+                        Foreground="#121212" 
+                        FontWeight="Bold" 
+                        FontSize="13" 
+                        Margin="0,0,0,10"
+                        ToolTip="Add selected jewellery item and quantity to the active billing invoice."/>
+
+                <!-- Save/Process Invoice -->
+                <Button Content="COMPLETE SALE &amp; PRINT" 
+                        Command="{Binding SaveBillCommand}" 
+                        Height="45" 
+                        Background="{DynamicResource SuccessBrush}" 
+                        Foreground="White" 
+                        FontWeight="Bold" 
+                        FontSize="13" 
+                        Margin="0"
+                        ToolTip="Save sales transaction to database, auto-decrement inventory stock, and print hardcopy invoice."/>
+            </StackPanel>
+        </Border>
 
         <!-- Bill Display Section -->
-        <StackPanel Grid.Column="1">
-            <GroupBox Header="Current Bill" Padding="10">
+        <Border Grid.Column="1" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderGoldBrush}" Padding="0,0,0,10" Margin="0,0,0,15">
+                    <Grid>
+                        <TextBlock Text="Active Customer Bill" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding SelectedCustomer.Name, StringFormat='Client: {0}'}" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    </Grid>
+                </Border>
+
+                <!-- Current Bill Table -->
+                <DataGrid Grid.Row="1" ItemsSource="{Binding CurrentBillItems}" AutoGenerateColumns="False" Margin="0,0,0,15">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Jewellery Description" Binding="{Binding Item.Name}" Width="*" />
+                        <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="100" ElementStyle="{StaticResource RightAlignedDataGridText}"/>
+                        <DataGridTextColumn Header="Total Price" Binding="{Binding Price, StringFormat='₹{0:N2}'}" Width="150" ElementStyle="{StaticResource RightAlignedDataGridText}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Receipt Bottom Summary -->
+                <Border Grid.Row="2" Background="{DynamicResource CardInnerBgBrush}" Padding="15" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+                    <Grid>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="GST (Calculated at checkout)" FontSize="12" Foreground="{DynamicResource TextMutedBrush}"/>
+                            <TextBlock Text="Includes making charges reconciliation" FontSize="10" Foreground="{DynamicResource TextMutedBrush}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock Text="Subtotal: " FontSize="14" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Bottom" Margin="0,0,8,4"/>
+                            <TextBlock Text="{Binding TotalAmount, StringFormat='₹{0:N2}'}" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" VerticalAlignment="Center" Margin="0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Quick Add Customer Overlay Modal Panel -->
+        <Border Grid.ColumnSpan="2" 
+                Background="#B3121212" 
+                Visibility="{Binding IsQuickAddOpen, Converter={StaticResource BoolToVis}}" 
+                Margin="-20"
+                Panel.ZIndex="999">
+            <Border Background="{DynamicResource CardBgBrush}" 
+                    BorderBrush="{DynamicResource GoldPrimaryBrush}" 
+                    BorderThickness="1" 
+                    Width="400" 
+                    Height="320" 
+                    CornerRadius="8" 
+                    Padding="25"
+                    VerticalAlignment="Center" 
+                    HorizontalAlignment="Center">
                 <StackPanel>
-                    <DataGrid ItemsSource="{Binding CurrentBillItems}" AutoGenerateColumns="False" Height="300" Margin="0,0,0,10">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Item" Binding="{Binding Item.Name}" Width="*" />
-                            <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity}" Width="Auto" />
-                            <DataGridTextColumn Header="Price" Binding="{Binding Price}" Width="Auto" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <TextBlock Text="{Binding TotalAmount, StringFormat='Total: {0:C}'}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right"/>
+                    <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderGoldBrush}" Padding="0,0,0,10" Margin="0,0,0,20">
+                        <TextBlock Text="Quick Add New Patron" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}"/>
+                    </Border>
+
+                    <!-- Name Input -->
+                    <TextBlock Text="Full Name:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding QuickAddCustomerName, UpdateSourceTrigger=PropertyChanged}" Height="38" Padding="10,6" Margin="0,0,0,15"/>
+
+                    <!-- Phone Input -->
+                    <TextBlock Text="Phone Contact:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding QuickAddCustomerPhone, UpdateSourceTrigger=PropertyChanged}" Height="38" Padding="10,6" Margin="0,0,0,25"/>
+
+                    <!-- Action buttons -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" 
+                                Content="REGISTER PATRON" 
+                                Command="{Binding SaveQuickAddCustomerCommand}" 
+                                Height="40" 
+                                Background="{DynamicResource SuccessBrush}" 
+                                Foreground="White" 
+                                FontWeight="Bold" 
+                                FontSize="12" 
+                                Margin="0,0,5,0"
+                                ToolTip="Save client profile and automatically select them on the billing list."/>
+                        <Button Grid.Column="1" 
+                                Content="CANCEL" 
+                                Command="{Binding CloseQuickAddCommand}" 
+                                Height="40" 
+                                Background="#666666" 
+                                Foreground="White" 
+                                FontWeight="Bold" 
+                                FontSize="12" 
+                                Margin="5,0,0,0"
+                                ToolTip="Close dialog and discard inputs."/>
+                    </Grid>
                 </StackPanel>
-            </GroupBox>
-        </StackPanel>
+            </Border>
+        </Border>
     </Grid>
 </UserControl>

@@ -3,45 +3,129 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000"
+             Background="{DynamicResource DarkBgBrush}">
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="400" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0">
-            <TextBlock Text="Edit Invoice Template" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <TextBlock Text="Shop Name:" Width="100"/>
-                <TextBox Text="{Binding Template.ShopName, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <TextBlock Text="GST Number:" Width="100"/>
-                <TextBox Text="{Binding Template.GSTNumber, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <TextBlock Text="Address:" Width="100"/>
-                <TextBox Text="{Binding Template.Address, UpdateSourceTrigger=PropertyChanged}" Width="180" Height="60" TextWrapping="Wrap"/>
-            </StackPanel>
-            <TextBlock Text="Template XAML:" Margin="0,10,0,0"/>
-            <TextBox x:Name="TemplateXamlBox" Text="{Binding Template.TemplateXaml, UpdateSourceTrigger=PropertyChanged}" TextChanged="TextBox_TextChanged" Width="280" Height="200" TextWrapping="Wrap" AcceptsReturn="True" FontFamily="Consolas"/>
+        <!-- Left Column: Template Editor Form -->
+        <Border Grid.Column="0" Margin="0,0,20,0" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource BorderGoldBrush}" Padding="0,0,0,10" Margin="0,0,0,15">
+                        <TextBlock Text="Invoice Template Designer" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}"/>
+                    </Border>
 
-            <TextBlock Text="Insert Field:" Margin="0,10,0,0"/>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <Button Content="Shop Name" Click="InsertField_Click" Tag="{}{ShopName}" />
-                <Button Content="GST Number" Click="InsertField_Click" Tag="{}{GSTNumber}" />
-            </StackPanel>
+                    <TextBlock Text="Shop Name (Header):" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Template.ShopName, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,12"/>
 
-            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <Button Content="Save Template" Command="{Binding SaveTemplateCommand}" Margin="0,0,10,0" Width="100"/>
-                <Button Content="Reset to Default" Command="{Binding ResetTemplateCommand}" Width="100"/>
-            </StackPanel>
-        </StackPanel>
+                    <TextBlock Text="GSTIN Registration No:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Template.GSTNumber, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,6" Margin="0,0,0,12"/>
 
-        <GroupBox Header="Preview" Grid.Column="1" Margin="20,0,0,0">
-            <FlowDocumentScrollViewer Document="{Binding PreviewDocument}"/>
-        </GroupBox>
+                    <TextBlock Text="Store Address:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Template.Address, UpdateSourceTrigger=PropertyChanged}" Height="55" Padding="10,6" Margin="0,0,0,12" TextWrapping="Wrap" AcceptsReturn="True"/>
+
+                    <!-- Visual styling designer options -->
+                    <Border Background="{DynamicResource CardInnerBgBrush}" Padding="15" Margin="0,0,0,15" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+                        <StackPanel>
+                            <TextBlock Text="Visual Receipt Customizer" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" Margin="0,0,0,10"/>
+
+                            <!-- Accent Color Dropdown -->
+                            <TextBlock Text="Receipt Accent Branding Color:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding AccentColor}" Height="34" Margin="0,0,0,10"/>
+
+                            <!-- Font Family Dropdown -->
+                            <TextBlock Text="Typography Font Family:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding AvailableFonts}" SelectedItem="{Binding SelectedFontFamily}" Height="34" Margin="0,0,0,10"/>
+
+                            <!-- Font Size Slider -->
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Title Header Font Size:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding HeaderFontSize, StringFormat='{}{0} pt'}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}"/>
+                            </Grid>
+                            <Slider Minimum="14" Maximum="32" Value="{Binding HeaderFontSize, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" TickFrequency="1" IsSnapToTickEnabled="True"/>
+
+                            <!-- Footer Text Box -->
+                            <TextBlock Text="Invoice Footer Terms &amp; Conditions:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding FooterText, UpdateSourceTrigger=PropertyChanged}" Height="55" Margin="0" TextWrapping="Wrap" AcceptsReturn="True"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Template Code Editor -->
+                    <Expander Header="Advanced Layout Engine (XAML)" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,12" BorderThickness="0" Background="Transparent">
+                        <StackPanel Margin="0,10,0,0">
+                            <TextBlock Text="Receipt Raw XAML Schema:" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TemplateXamlBox" 
+                                     Text="{Binding Template.TemplateXaml, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextChanged="TextBox_TextChanged" 
+                                     Height="80" 
+                                     TextWrapping="Wrap" 
+                                     AcceptsReturn="True" 
+                                     FontFamily="Consolas" 
+                                     FontSize="11" 
+                                     Background="{DynamicResource DarkBgBrush}" 
+                                     Foreground="{DynamicResource TextLightBrush}" 
+                                     BorderBrush="{DynamicResource BorderDarkBrush}" 
+                                     Margin="0"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- Insert Field helper tags -->
+                    <TextBlock Text="Insert Dynamic Reference Tags:" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" Margin="0,0,0,6"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                        <Button Content="Showroom Name" Click="InsertField_Click" Tag="{}{ShopName}" Margin="0,0,8,0" Padding="10,6" Background="{DynamicResource CardInnerBgBrush}" Foreground="{DynamicResource TextLightBrush}" FontSize="11" Height="28"
+                                ToolTip="Insert dynamic shop name variable at text cursor."/>
+                        <Button Content="GSTIN Tag" Click="InsertField_Click" Tag="{}{GSTNumber}" Margin="0,0,8,0" Padding="10,6" Background="{DynamicResource CardInnerBgBrush}" Foreground="{DynamicResource TextLightBrush}" FontSize="11" Height="28"
+                                ToolTip="Insert dynamic showroom GSTIN variable at text cursor."/>
+                        <Button Content="Store Address" Click="InsertField_Click" Tag="{}{Address}" Padding="10,6" Background="{DynamicResource CardInnerBgBrush}" Foreground="{DynamicResource TextLightBrush}" FontSize="11" Height="28"
+                                ToolTip="Insert dynamic showroom street address variable at text cursor."/>
+                    </StackPanel>
+
+                    <!-- Save & Reset Actions -->
+                    <Button Content="SAVE DESIGN TEMPLATE" 
+                            Command="{Binding SaveTemplateCommand}" 
+                            Height="40" 
+                            Background="{DynamicResource SuccessBrush}" 
+                            Foreground="White" 
+                            FontWeight="Bold" 
+                            FontSize="12" 
+                            Margin="0,0,0,10"
+                            ToolTip="Commit custom brand header details, accent colors, and custom terms back to database template."/>
+                    <Button Content="RESET TO FACTORY SYSTEM DEFAULT" 
+                            Command="{Binding ResetTemplateCommand}" 
+                            Height="36" 
+                            Background="{DynamicResource DangerBrush}" 
+                            Foreground="White" 
+                            FontWeight="Bold" 
+                            FontSize="11" 
+                            Margin="0"
+                            ToolTip="Reset visual layout variables to pre-configured defaults."/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Right Column: Interactive Document Live Preview Panel -->
+        <Border Grid.Column="1" Padding="20" Background="{DynamicResource CardBgBrush}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource BorderDarkBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Live Document Preview Canvas" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource GoldPrimaryBrush}" Margin="0,0,0,15"/>
+
+                <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="{DynamicResource BorderGoldBrush}" BorderThickness="1" CornerRadius="4" Padding="10">
+                    <FlowDocumentScrollViewer Document="{Binding PreviewDocument}"/>
+                </Border>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

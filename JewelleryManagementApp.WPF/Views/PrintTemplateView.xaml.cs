@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using JewelleryManagementApp.WPF.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JewelleryManagementApp.WPF.Views
 {
@@ -9,6 +10,7 @@ namespace JewelleryManagementApp.WPF.Views
         public PrintTemplateView()
         {
             InitializeComponent();
+            DataContext = App.ServiceProvider.GetRequiredService<PrintTemplateViewModel>();
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)

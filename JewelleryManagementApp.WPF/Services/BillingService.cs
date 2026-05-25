@@ -8,20 +8,34 @@ namespace JewelleryManagementApp.WPF.Services
 {
     public class BillingService : IBillingService
     {
-        private readonly JewelleryDbContext _dbContext;
-
         public BillingService(JewelleryDbContext dbContext)
         {
-            _dbContext = dbContext;
+            // Keep constructor for DI compatibility, but we will use fresh instances below
         }
 
-        public async Task<List<Item>> GetAvailableItemsAsync() => await _dbContext.Items.ToListAsync();
-        public async Task<List<Customer>> GetCustomersAsync() => await _dbContext.Customers.ToListAsync();
+        public async Task<List<Item>> GetAvailableItemsAsync()
+        {
+            using (var db = new JewelleryDbContext())
+            {
+                return await db.Items.ToListAsync();
+            }
+        }
+
+        public async Task<List<Customer>> GetCustomersAsync()
+        {
+            using (var db = new JewelleryDbContext())
+            {
+                return await db.Customers.ToListAsync();
+            }
+        }
 
         public async Task SaveBillAsync(Bill bill)
         {
-            _dbContext.Bills.Add(bill);
-            await _dbContext.SaveChangesAsync();
+            using (var db = new JewelleryDbContext())
+            {
+                db.Bills.Add(bill);
+                await db.SaveChangesAsync();
+            }
         }
     }
 }
